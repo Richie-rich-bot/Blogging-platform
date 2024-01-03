@@ -39,6 +39,8 @@ class BlogPost(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     likes = models.PositiveIntegerField(default=0)
     views = models.PositiveIntegerField(default=0)
+    image = models.ImageField(upload_to='blog_post_images/', null=True, blank=True)
+
 
     def save(self, *args, **kwargs):
         if self.author is None and hasattr(self, 'request') and self.request.user.is_authenticated:
