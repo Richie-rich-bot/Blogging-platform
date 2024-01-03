@@ -5,18 +5,29 @@ class CommentSerializer(serializers.ModelSerializer):
     """Serializer for Comment."""
     class Meta:
         model = Comment
-        fields = ['author', 'text', 'created_at']
-
+        fields = ['text', 'created_at','post']
+        
+        
 class BlogPostSerializer(serializers.ModelSerializer):
     """Serializer for BlogPost."""
     class Meta:
         model = BlogPost
         fields = ['id', 'title', 'pub_date', 'author', 'likes', 'views']
-        read_only_fields = ['id']
+        read_only_fields = ['id']        
+        
+        
+class DetailCommentSerializer(serializers.ModelSerializer):
+    """Serializer for Comment."""
+    post = BlogPostSerializer(read_only=True)
+    class Meta:
+        model = Comment
+        fields = ['text', 'created_at','post']
+
+
 
 class BlogPostDetailSerializer(BlogPostSerializer):
     """Serializer for blog post detail view"""
-    comments = CommentSerializer(many=True, read_only=True)
+    # comment = CommentSerializer(many=True, read_only=True)
 
     class Meta(BlogPostSerializer.Meta):
-        fields = BlogPostSerializer.Meta.fields + ['content', 'comments']
+        fields = BlogPostSerializer.Meta.fields + ['content']

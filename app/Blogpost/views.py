@@ -3,9 +3,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from django.shortcuts import render
+from core.permissions import AllowBlogOwners
 
 from core.models import BlogPost, Comment
-from .serializers import BlogPostDetailSerializer, BlogPostSerializer, CommentSerializer
+from .serializers import BlogPostDetailSerializer, BlogPostSerializer, CommentSerializer, DetailCommentSerializer
 
 from rest_framework import filters
 
@@ -13,7 +14,7 @@ class BlogPostViewSet(viewsets.ModelViewSet):
     """View for manage blog APIs."""
     serializer_class = BlogPostDetailSerializer
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,AllowBlogOwners]
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', 'content']
 
@@ -33,6 +34,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     """Viewset for managing comments."""
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, AllowBlogOwners]
     filter_backends = [filters.SearchFilter]
     search_fields = ['author']
+    
+    def get_serializer_class(self):
+        if self.action in ['list','retrieve']:
+            return DetailCommentSerializer
+        return self.serializer_class
